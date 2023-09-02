@@ -1,4 +1,4 @@
-package com.yolesdk.sdk;
+package com.yolesdk.sdk.data;
 
 public class InitSdkData {
     public enum PayStatus {

@@ -1,7 +1,6 @@
 package com.yolesdk.sdk;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.ViewGroup;
@@ -14,30 +13,15 @@ import com.yolesdk.sdk.bigossp.YoleRewardVideoListener;
 import com.yolesdk.sdk.bigossp.YoleSplashAdListener;
 import com.yolesdk.sdk.callback.CallBackFunction;
 import com.yolesdk.sdk.callback.InitCallBackFunction;
-import com.yolesdk.sdk.data.YoleInitConfig;
-import com.yolesdk.sdk.bigossp.BigosspMgr;
-import com.yolesdk.sdk.tool.UserInfo;
-import com.yolesdk.sdk.R;
+import com.yolesdk.sdk.data.InitSdkData;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class YoleSdkMgr {
+public class YoleSdkMgr extends YoleSdkBase{
 
     private String TAG = "YoleSdkMgr";
     private static  YoleSdkMgr _instance = null;
-    private YoleInitConfig config = null;
-    private NetUtil request = null;
-    private Context context =  null;
-//    private Activity act =  null;
-    public UserInfo user =  null;
-    public BigosspMgr bigosspMgr =  null;
-    public InitCallBackFunction initBack = null;
-    public boolean isDebugger = false;
-    public boolean initSuccess = false;
-    public InitCallBackFunction sdkInitBack = null;
-    public Timer sdkInitBackTimer = null;
-//    public Handler handler = null;
 
     public static YoleSdkMgr getsInstance() {
         if(YoleSdkMgr._instance == null)
@@ -49,63 +33,8 @@ public class YoleSdkMgr {
     private YoleSdkMgr() {
         Log.e(TAG,"YoleSdkMgr");
     }
-    public void initSdk( Context _var1,YoleInitConfig _config, InitCallBackFunction _initBack)
-    {
 
-        context = _var1;
-        config = _config;
-        initBack = _initBack;
-//        handler = new Handler(Looper.getMainLooper());
-
-        this.init(_var1,config.getAppId(),config.getAppKey(),config.getCpCode(),config.isDebug());
-        this.initBigossp(_var1,config,new InitCallBackFunction(){
-            @Override
-            public void success(InitSdkData info) {
-                initSuccess = true;
-                if(sdkInitBack != null)
-                {
-                    if(sdkInitBackTimer != null) {
-                        sdkInitBackTimer.cancel();
-                    }
-                    sdkInitBack.success(null);
-                }
-                initAppBySdk(config.getCpCode(),config.getUserAgent(),config.getMobile());
-            }
-
-            @Override
-            public void fail(String info) {
-                if(sdkInitBack != null)
-                {
-                    if(sdkInitBackTimer != null) {
-                        sdkInitBackTimer.cancel();
-                    }
-                    sdkInitBack.fail("");
-                }
-                initBack.fail(info);
-            }
-        });
-    }
-    private void init(Context var1,String appId,String appkey,String cpCode,boolean _isDebugger)
-    {
-        request = new NetUtil();
-        isDebugger = _isDebugger;
-        user = new UserInfo(var1,appkey,cpCode,_isDebugger);
-        if(appId.length() > 0)
-            bigosspMgr = new BigosspMgr(var1,config.getAppId());
-    }
-    private void initAppBySdk(String cpCode,String userAgent,String mobile) {
-        userAgent = userAgent.length() <=0 ? user.getPhoneModel() : userAgent;
-        mobile = mobile.length() <=0 ? user.getPhoneNumber() : mobile;
-        this.initAppBySdk(cpCode,userAgent,mobile,user.getGaid(),user.getImei(),user.getMac(),user.getCountryCode(),user.getMcc(),user.getMnc());
-    }
-    private void initBigossp(Context var1,YoleInitConfig config,InitCallBackFunction _initBack)
-    {
-        if(bigosspMgr != null)
-            bigosspMgr.initAd(var1,config,_initBack);
-        else {
-            _initBack.success(null);
-        }
-    }
+    /**初始化sdk内 Bigossp广告模块*/
     public void startPay(Activity act, String amount, String orderNumber, CallBackFunction backFunction)
     {
         user.setAmount(amount);
@@ -145,66 +74,6 @@ public class YoleSdkMgr {
     }
 
 
-    //支付的可行性
-    private boolean getFeasibility(Activity act)
-    {
-        if(user.getCpCode().length() <= 0)
-        {
-            Toast.makeText(act, act.getString(R.string.cpcode_error), Toast.LENGTH_SHORT).show();
-             return false;
-        }
-        if(user.getAmount().length() <= 0)
-        {
-            Toast.makeText(act, act.getString(R.string.amount_error), Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if(user.getCountryCode().length() <= 0)
-        {
-            Toast.makeText(act, act.getString(R.string.countrycode_error), Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if(user.getMcc().length() <= 0)
-        {
-            Toast.makeText(act, act.getString(R.string.mcc_error), Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if(user.getMnc().length() <= 0)
-        {
-            Toast.makeText(act, act.getString(R.string.mnc_error), Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if(user.getPayOrderNum().length() <= 0)
-        {
-            Toast.makeText(act, act.getString(R.string.payordernum_error), Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        return true;
-    }
-    private void initAppBySdk(String cpCode,String userAgent,String mobile,String gaid,String imei,String mac,String countryCode,String mcc,String mnc) {
-
-        new Thread(new Runnable(){
-            @Override
-            public void run() {
-                try {
-                    request.initAppBySdk(
-                            mobile,
-                            gaid,
-                            userAgent,
-                            imei,
-                            mac,
-                            countryCode,
-                            mcc,
-                            mnc,
-                            cpCode
-                    );
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
     public void createDCBInvoiceBySdk() {
 
         LoadingDialog.getInstance(context).showDialog();//显示
@@ -257,22 +126,22 @@ public class YoleSdkMgr {
     //设置开屏延时检测回调
     public void setSplashDelayBack(Activity _var, int delayInitOverTime,InitCallBackFunction listener)
     {
-        if(initSuccess == true)
+        if(bigosspInitSuccess == true)
         {
             listener.success(null);
         }
         else
         {
-            sdkInitBack = listener;
-            sdkInitBackTimer = new Timer();
+            bigosspInitBack = listener;
+            bigosspInitBackTimer = new Timer();
             TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
-                    sdkInitBack = null;
+                    bigosspInitBack = null;
                     listener.fail("");
                 }
             };
-            sdkInitBackTimer.schedule(task, delayInitOverTime);
+            bigosspInitBackTimer.schedule(task, delayInitOverTime);
         }
     }
     public boolean splashIsSkippable()
@@ -296,7 +165,7 @@ public class YoleSdkMgr {
     }
     public void showInterstitial(Activity _var,String slotId, YoleInterstitialListener listener)
     {
-        if(initSuccess == false)
+        if(bigosspInitSuccess == false)
         {
             listener.onAdError(-1,"sdk init faile");
             return;
@@ -319,7 +188,7 @@ public class YoleSdkMgr {
     }
     public void showRewardVideo(Activity _var,String slotId, YoleRewardVideoListener listener)
     {
-        if(initSuccess == false)
+        if(bigosspInitSuccess == false)
         {
             listener.onAdError(-1,"sdk init faile");
             return;
@@ -342,7 +211,7 @@ public class YoleSdkMgr {
     }
     public void showBanner(Activity _var,String slotId, ViewGroup containerView, YoleBannerListener listener)
     {
-        if(initSuccess == false)
+        if(bigosspInitSuccess == false)
         {
             listener.onAdError(-1,"sdk init faile");
             return;

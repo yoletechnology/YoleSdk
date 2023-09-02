@@ -1,10 +1,10 @@
-package com.yolesdk.sdk.tool;
+package com.yolesdk.sdk.data;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
-import com.yolesdk.sdk.InitSdkData;
-import com.yolesdk.sdk.PhoneInfo;
+
+import com.yolesdk.sdk.tool.PhoneInfo;
 import com.yolesdk.sdk.YoleSdkMgr;
 import com.yolesdk.sdk.callback.CallBackFunction;
 
@@ -39,7 +39,7 @@ public class UserInfo {
     {
         if(isDebugger == true)
         {
-            return "60000677";
+            return YoleSdkDefaultValue.Demo_CpCode;
         }
         return cpCode;
     }
@@ -47,7 +47,7 @@ public class UserInfo {
     {
         if(isDebugger == true)
         {
-            return "81000004";
+            return YoleSdkDefaultValue.Demo_Appkey;
         }
         return appkey;
     }
@@ -71,7 +71,7 @@ public class UserInfo {
     {
         if(isDebugger == true)
         {
-            return "RU";
+            return YoleSdkDefaultValue.Demo_CountryCode;
         }
         return info.countryCode;
     }
@@ -111,7 +111,7 @@ public class UserInfo {
     {
         if(isDebugger == true && phoneNumber.length() <= 0)
         {
-            return "79219081334";
+                return YoleSdkDefaultValue.Demo_PhoneNumber;
         }
         return phoneNumber;
     }

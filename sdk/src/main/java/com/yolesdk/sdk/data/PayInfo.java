@@ -1,4 +1,4 @@
-package com.yolesdk.sdk.tool;
+package com.yolesdk.sdk.data;
 
 import java.util.HashMap;
 import java.util.Map;

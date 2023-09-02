@@ -1,6 +1,9 @@
-package com.yolesdk.sdk;
+package com.yolesdk.sdk.tool;
 
 import android.util.Log;
+
+import com.yolesdk.sdk.YoleSdkMgr;
+
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -17,13 +20,13 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class NetUtil{
-    public String TAG = "Yole_NetUtil";
+    public static String TAG = "Yole_NetUtil";
 
     NetUtil()
     {
         Log.d(TAG, TAG);
     }
-    public  String sendPost(String url,JSONObject formBody) {
+    public  static String sendPost(String url,JSONObject formBody) {
         url = "https://api.yolesdk.com/"+url;
         //创建OkHttp客户端
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -35,7 +38,7 @@ public class NetUtil{
         //创建请求对象
         RequestBody requestBody = RequestBody.create(mediaType, formBody.toString());
 
-        Log.d(TAG, "appkey:"+YoleSdkMgr.getsInstance().user.getAppkey());
+        Log.d(TAG, "appkey:"+ YoleSdkMgr.getsInstance().user.getAppkey());
         Log.d(TAG, "url:"+url);
         Log.d(TAG, "FormBody:"+formBody.toString());
         Log.d(TAG, "RequestBody:"+requestBody.toString());
@@ -57,54 +60,7 @@ public class NetUtil{
             return e.toString();
         }
     }
-    public void initAppBySdk(String mobile,String gaid,String userAgent,String imei,String mac,String countryCode,String mcc,String mnc,String cpCode) throws Exception {
 
-        JSONObject formBody = new JSONObject ();
-        if(mobile.length() > 0)
-            formBody.put("mobile",mobile);
-        if(gaid.length() > 0)
-            formBody.put("gaid",gaid);
-        if(userAgent.length() > 0)
-            formBody.put("userAgent",userAgent);
-        if(imei.length() > 0)
-            formBody.put("imei",imei);
-        if(mac.length() > 0)
-            formBody.put("mac",mac);
-        if(countryCode.length() > 0)
-            formBody.put("countryCode",countryCode);
-        if(mcc.length() > 0)
-            formBody.put("mcc",mcc);
-        if(mnc.length() > 0)
-            formBody.put("mnc",mnc);
-        if(cpCode.length() > 0)
-            formBody.put("cpCode",cpCode);
-
-        String res = this.sendPost("api/user/initAppBySdk",formBody);
-        Log.d(TAG, "initAppBySdk"+res);
-        YoleSdkMgr.getsInstance().user.decodeInitAppBySdk(res);
-    }
-    public void createDCBInvoiceBySdk(String cpCode,String mobile,String amount,String countryCode,String mcc,String mnc,String orderNumber) throws Exception {
-
-        JSONObject formBody = new JSONObject ();
-        if(cpCode.length() > 0)
-            formBody.put("cpCode",cpCode);
-        if(mobile.length() > 0)
-            formBody.put("mobile",mobile);
-        if(amount.length() > 0)
-            formBody.put("amount",amount);
-        if(countryCode.length() > 0)
-            formBody.put("countryCode",countryCode);
-        if(mcc.length() > 0)
-            formBody.put("mcc",mcc);
-        if(mnc.length() > 0)
-            formBody.put("mnc",mnc);
-        if(orderNumber.length() > 0)
-            formBody.put("orderNumber",orderNumber);
-
-        String res = this.sendPost("api/RUPayment/createDCBInvoiceBySdk",formBody);
-        Log.d(TAG, "createDCBInvoiceBySdk"+res);
-        YoleSdkMgr.getsInstance().user.decodePaymentResults(res);
-    }
     public static String serializeMetadata(HashMap<String, String> metadata) throws IOException {
         try(ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos)) {

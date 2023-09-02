@@ -1,6 +1,6 @@
 package com.yolesdk.sdk.callback;
 
-import com.yolesdk.sdk.InitSdkData;
+import com.yolesdk.sdk.data.InitSdkData;
 
 public interface InitCallBackFunction {
 
