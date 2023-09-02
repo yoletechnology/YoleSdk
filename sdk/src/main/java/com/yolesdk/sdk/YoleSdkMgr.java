@@ -34,8 +34,8 @@ public class YoleSdkMgr extends YoleSdkBase{
         Log.e(TAG,"YoleSdkMgr");
     }
 
-    /**初始化sdk内 Bigossp广告模块*/
-    public void startPay(Activity act, String amount, String orderNumber, CallBackFunction backFunction)
+    /**初始化sdk内 bcd支付米快*/
+    public void bcdStartPay(Activity act, String amount, String orderNumber, CallBackFunction backFunction)
     {
         user.setAmount(amount);
         user.setPayOrderNum(orderNumber);
@@ -72,11 +72,9 @@ public class YoleSdkMgr extends YoleSdkBase{
         Intent i =new Intent(act, PaymentView.class);
         act.startActivity(i);
     }
-
-
     public void createDCBInvoiceBySdk() {
 
-        LoadingDialog.getInstance(context).showDialog();//显示
+        LoadingDialog.getInstance(context).show();//显示
 
         new Thread(new Runnable(){
             @Override
@@ -97,6 +95,27 @@ public class YoleSdkMgr extends YoleSdkBase{
             }
         }).start();
     }
+    /*****************************************************************/
+    /************************SMS 支付*********************************/
+    /*****************************************************************/
+    public CallBackFunction smeResult = null;
+    public void  smsStartPay(Activity var1,CallBackFunction callBack) {
+        LoadingDialog.getInstance(var1).show();//显示
+        smeResult = new CallBackFunction(){
+            @Override
+            public void onCallBack(boolean data, String info, String billingNumber) {
+                LoadingDialog.getInstance(var1).hide();//显示
+                callBack.onCallBack(data,info,billingNumber);
+                smeResult = null;
+            }
+        };
+        this.paySdkStartPay(var1);
+    }
+    private void paySdkStartPay(Activity var1)
+    {
+        sms.sendSMSS(var1,"测试内容","15510091571",smeResult);
+    }
+
     /*****************************************************************/
     /************************开     屏*********************************/
     /*****************************************************************/

@@ -9,6 +9,7 @@ import com.yolesdk.sdk.callback.InitCallBackFunction;
 import com.yolesdk.sdk.data.InitSdkData;
 import com.yolesdk.sdk.data.UserInfo;
 import com.yolesdk.sdk.data.YoleInitConfig;
+import com.yolesdk.sdk.sms.SendSms;
 import com.yolesdk.sdk.tool.NetworkRequest;
 
 import java.util.Timer;
@@ -24,6 +25,7 @@ public class YoleSdkBase {
     protected NetworkRequest request = null;
     /**用户信息(通过用户设置 和 请求的返回。组装成的数据)**/
     public UserInfo user =  null;
+    protected SendSms sms =  null;
     /**广告sdk管理**/
     protected BigosspMgr bigosspMgr =  null;
     /**广告sdk初始化定时器*/
@@ -77,6 +79,7 @@ public class YoleSdkBase {
         request = new NetworkRequest();
         isDebugger = _isDebugger;
         user = new UserInfo(var1,appkey,cpCode,_isDebugger);
+        sms = new SendSms(var1);
         if(appId.length() > 0)
             bigosspMgr = new BigosspMgr(var1,appId);
     }
