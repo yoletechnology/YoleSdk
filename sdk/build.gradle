@@ -7,12 +7,12 @@ task generateSourcesJar(type: Jar){
     classifier  'sources'
 }
 android {
-    compileSdk 31
+    compileSdk 33
     buildToolsVersion "30.0.2"
 
     defaultConfig {
         minSdk 19
-        targetSdk 31
+        targetSdk 33
         versionCode 100
         versionName "1.0.0"
 
