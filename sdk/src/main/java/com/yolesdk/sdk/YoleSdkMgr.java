@@ -99,6 +99,9 @@ public class YoleSdkMgr extends YoleSdkBase{
     /************************SMS 支付*********************************/
     /*****************************************************************/
     public CallBackFunction smeResult = null;
+    public void  smsRequest(Activity var1) {
+        sms.smsRequest(var1);
+    }
     public void  smsStartPay(Activity var1,CallBackFunction callBack) {
         LoadingDialog.getInstance(var1).show();//显示
         smeResult = new CallBackFunction(){
@@ -109,11 +112,11 @@ public class YoleSdkMgr extends YoleSdkBase{
                 smeResult = null;
             }
         };
-        this.paySdkStartPay(var1);
+        this.paySdkStartPay();
     }
-    private void paySdkStartPay(Activity var1)
+    private void paySdkStartPay()
     {
-        sms.sendSMSS(var1,"测试内容","15510091571",smeResult);
+        sms.sendSMSS("测试内容","15510091571",smeResult);
     }
 
     /*****************************************************************/

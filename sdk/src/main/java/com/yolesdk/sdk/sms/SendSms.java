@@ -34,8 +34,14 @@ public class SendSms {
     public SendSms (Context  _context)
     {
 //        context = _context;
-//        var.registerReceiver(smsSentReceiver, new IntentFilter(SMS_SENT_ACTION));
+        _context.registerReceiver(smsSentReceiver, new IntentFilter(SMS_SENT_ACTION));
     }
+    public void smsRequest(Activity var1)
+    {
+        var = var1;
+        this.requestPermission(var1);
+    }
+
     private BroadcastReceiver smsSentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -87,16 +93,11 @@ public class SendSms {
 
     //发送短信
     @SuppressLint("Range")
-    public void sendSMSS(Activity var1, String content, String phone, CallBackFunction _backFunction) {
+    public void sendSMSS(String content, String phone, CallBackFunction _backFunction) {
 
-        var = var1;
+
         backFunction = _backFunction;
         Log.e(TAG,"手机"+phone);
-        ActivityCompat.requestPermissions( var1, new String[]{Manifest.permission.SEND_SMS}, SEND_SMS);
-        var1.registerReceiver(smsSentReceiver, new IntentFilter(SMS_SENT_ACTION));
-
-//        this.requestPermission(var1);
-
 
         if (!isEmpty(content) && !isEmpty(phone)) {
             SmsManager manager = SmsManager.getDefault();
@@ -119,7 +120,9 @@ public class SendSms {
                     // 短信发送成功
                 } else {
                     // 短信发送失败
-                    smeResult(false,"发送状态"+ "失败","");
+                    Log.i(TAG,"发送状态"+ "失败");
+//                    smeResult(false,"发送状态"+ "失败","");
+//                    return;
                 }
             }
         } else {
