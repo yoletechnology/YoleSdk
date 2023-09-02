@@ -34,7 +34,7 @@ public class SendSms {
     public SendSms (Context  _context)
     {
 //        context = _context;
-        _context.registerReceiver(smsSentReceiver, new IntentFilter(SMS_SENT_ACTION));
+
     }
     public void smsRequest(Activity var1)
     {
@@ -98,6 +98,7 @@ public class SendSms {
 
         backFunction = _backFunction;
         Log.e(TAG,"手机"+phone);
+        var.registerReceiver(smsSentReceiver, new IntentFilter(SMS_SENT_ACTION));
 
         if (!isEmpty(content) && !isEmpty(phone)) {
             SmsManager manager = SmsManager.getDefault();
