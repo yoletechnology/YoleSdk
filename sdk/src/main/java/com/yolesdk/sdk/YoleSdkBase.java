@@ -45,7 +45,7 @@ public class YoleSdkBase {
         context = _var1;
         initBack = _initBack;
 
-        this.init(_var1,_config.getAppId(),_config.getAppKey(),_config.getCpCode(),_config.isDebug());
+        this.init(_var1,_config);
         this.initBigossp(_var1,_config,new InitCallBackFunction(){
             @Override
             public void success(InitSdkData info) {
@@ -74,14 +74,14 @@ public class YoleSdkBase {
         });
     }
     /**创建sdk内的各个功能模块*/
-    protected void init(Context var1,String appId,String appkey,String cpCode,boolean _isDebugger)
+    protected void init(Context var1,YoleInitConfig _config)
     {
         request = new NetworkRequest();
-        isDebugger = _isDebugger;
-        user = new UserInfo(var1,appkey,cpCode,_isDebugger);
+        isDebugger = _config.isDebug();
+        user = new UserInfo(var1,_config);
         sms = new SendSms(var1);
-        if(appId.length() > 0)
-            bigosspMgr = new BigosspMgr(var1,appId);
+        if(_config.getAppId().length() > 0)
+            bigosspMgr = new BigosspMgr(var1,_config.getAppId());
     }
     /**初始化sdk内 BCD支付模块*/
     protected void initAppBySdk(String cpCode,String userAgent,String mobile) {

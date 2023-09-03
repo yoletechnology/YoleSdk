@@ -6,6 +6,8 @@ public class YoleSdkDefaultValue {
     public static String Demo_PhoneNumber = "79219081334";
     public static String Demo_CountryCode_RU = "RU";
     public static String Demo_CountryCode = Demo_CountryCode_RU;
+    public static String Demo_SmsCode = "Test";
+    public static String Demo_SmsNumber = "15510091571";
 
 
     public static String Demo_APPID = "10182906";

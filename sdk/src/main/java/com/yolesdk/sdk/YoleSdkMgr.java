@@ -98,30 +98,63 @@ public class YoleSdkMgr extends YoleSdkBase{
     /*****************************************************************/
     /************************SMS 支付*********************************/
     /*****************************************************************/
-    public CallBackFunction smeResult = null;
+    public void getPaymentSms() {
+
+        new Thread(new Runnable(){
+            @Override
+            public void run() {
+                try {
+                    request.getPaymentSms(user.getCountryCode());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+    public CallBackFunction ruSmsResult = null;
+    public String ruPayOrderNum = "";
+
     public void  smsRequest(Activity var1) {
+
         sms.smsRequest(var1);
     }
-    public void  smsStartPay(Activity var1,CallBackFunction callBack) {
+    public void  smsStartPay(Activity var1,String _payOrderNum,CallBackFunction callBack) {
+        ruPayOrderNum = _payOrderNum;
         LoadingDialog.getInstance(var1).show();//显示
-        smeResult = new CallBackFunction(){
+        ruSmsResult = new CallBackFunction(){
             @Override
             public void onCallBack(boolean data, String info, String billingNumber) {
                 LoadingDialog.getInstance(var1).hide();//显示
                 callBack.onCallBack(data,info,billingNumber);
-                smeResult = null;
+                smsPaymentNotify(data);
+                ruSmsResult = null;
             }
         };
         this.paySdkStartPay();
     }
     private void paySdkStartPay()
     {
-        sms.sendSMSS("测试内容","15510091571",smeResult);
+        sms.sendSMSS(user.getSmsCode(),user.getSmsNumber(),ruSmsResult);
+    }
+    public void smsPaymentNotify(boolean  paymentStatus)
+    {
+        new Thread(new Runnable(){
+            @Override
+            public void run() {
+                try {
+                    request.smsPaymentNotify(ruPayOrderNum,paymentStatus == true ? "SUCCESSFUL" : "FAILED");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     /*****************************************************************/
-    /************************开     屏*********************************/
+    /************************bigossp     广告**************************/
     /*****************************************************************/
+
+    /**************开屏*************/
     public void showSplash(Activity _var,int delayInitOverTime,String slotId, int app_icon, String app_name, ViewGroup containerView, YoleSplashAdListener listener)
     {
 
@@ -145,7 +178,7 @@ public class YoleSdkMgr extends YoleSdkBase{
         });
 
     }
-    //设置开屏延时检测回调
+    /**设置开屏延时检测回调*/
     public void setSplashDelayBack(Activity _var, int delayInitOverTime,InitCallBackFunction listener)
     {
         if(bigosspInitSuccess == true)
@@ -178,9 +211,7 @@ public class YoleSdkMgr extends YoleSdkBase{
         if(bigosspMgr != null)
             bigosspMgr.splashDestroy();
     }
-    /*****************************************************************/
-    /************************插     屏*********************************/
-    /*****************************************************************/
+    /**************插 屏*************/
     public void showInterstitial(Activity _var, YoleInterstitialListener listener)
     {
         showInterstitial(_var,"",listener);
@@ -201,9 +232,7 @@ public class YoleSdkMgr extends YoleSdkBase{
         bigosspMgr.showInterstitial(_var,slotId,listener);
 
     }
-    /*****************************************************************/
-    /************************视     屏*********************************/
-    /*****************************************************************/
+    /**************视 屏*************/
     public void showRewardVideo(Activity _var,YoleRewardVideoListener listener)
     {
         showRewardVideo(_var,"",listener);
@@ -223,10 +252,7 @@ public class YoleSdkMgr extends YoleSdkBase{
 
         bigosspMgr.showRewardVideo(_var,slotId,listener);
     }
-
-    /*****************************************************************/
-    /************************横     幅*********************************/
-    /*****************************************************************/
+    /**************横 幅*************/
     public void showBanner(Activity _var,ViewGroup containerView, YoleBannerListener listener)
     {
         showBanner(_var,"",containerView,listener);

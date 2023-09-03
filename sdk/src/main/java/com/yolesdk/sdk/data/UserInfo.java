@@ -11,140 +11,78 @@ import com.yolesdk.sdk.callback.CallBackFunction;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class UserInfo {
-    private static Context act;
-    private String TAG = "Yole_UserInfo";
-    private static PhoneInfo info =  null;
-    private static PayInfo payInfo =  null;
-    private static String appkey = "";
-    private static String cpCode = "";
-    private static String phoneNumber = "";//手机号
-    private static String payOrderNum = "";//支付的订单号
-    private static String amount = "";
-    private static CallBackFunction backFunc = null;
-    private static boolean isDebugger = false;
-    public static InitSdkData initSdkData = null;
+public class UserInfo extends UserInfoBase{
+    private static String TAG = "Yole_UserInfo";
 
-    public UserInfo(Context var1, String _appkey, String _cpCode,boolean debugger)
+    public UserInfo(Context var1, YoleInitConfig _config)
     {
         act = var1;
-        appkey = _appkey;
-        cpCode = _cpCode;
-        isDebugger = debugger;
+        config = _config;
         info = new PhoneInfo(act);
-        Log.d(TAG, "NetUtil init:appkey="+appkey+"appkey="+cpCode);
+        Log.d(TAG, "NetUtil init:appkey="+config.getAppKey()+"cpCode="+config.getCpCode());
+    }
+    public  String getSmsNumber(){return super.getSmsNumber();}
+    public  String getSmsCode(){return super.getSmsCode();}
+    public  String getCpCode(){return super.getCpCode();}
+    public  String getAppkey(){return super.getAppkey();}
+    public  String getMcc(){return super.getMcc();}
+    public  String getMnc(){return super.getMnc();}
+    public  String getCountryCode(){return super.getCountryCode();}
+    public  String getImei()
+    {
+        return super.getImei();
+    }
+    public  String getMac()
+    {
+        return super.getMac();
+    }
+    public  String getPackageName()
+    {
+        return super.getPackageName();
+    }
+    public  String getAppName()
+    {
+        return super.getAppName();
+    }
+    public  Drawable getIcon()
+    {
+        return super.getIcon();
+    }
+    public  String getVersionName()
+    {
+        return super.getVersionName();
+    }
+    public  String getPhoneModel()
+    {
+        return super.getPhoneModel();
+    }
+    public  String getGaid()
+    {
+        return super.getGaid();
+    }
+    public  String getPhoneNumber(){return super.getPhoneNumber();}
+    public  String getPayOrderNum()
+    {
+        return super.getPayOrderNum();
+    }
+    public  String getAmount()
+    {
+        return super.getAmount();
+    }
+    public  CallBackFunction getPayCallBack()
+    {
+        return super.getPayCallBack();
     }
 
-    public static String getCpCode()
+    public  void decodePaymentResults(String res)
     {
-        if(isDebugger == true)
+        if(res.length() <= 0)
         {
-            return YoleSdkDefaultValue.Demo_CpCode;
+            Log.e(TAG, "decodePaymentResults:"+res);
+            if(backFunc != null)
+                backFunc.onCallBack(false,"","");
+            return;
         }
-        return cpCode;
-    }
-    public static String getAppkey()
-    {
-        if(isDebugger == true)
-        {
-            return YoleSdkDefaultValue.Demo_Appkey;
-        }
-        return appkey;
-    }
-    public static String getMcc()
-    {
-        if(isDebugger == true)
-        {
-            return info.mcc_network == "" ? info.mcc_sim : info.mcc_network;
-        }
-        return info.mcc_network;
-    }
-    public static String getMnc()
-    {
-        if(isDebugger == true)
-        {
-            return info.mnc_network == "" ? info.mnc_sim : info.mnc_network;
-        }
-        return info.mnc_network;
-    }
-    public static String getCountryCode()
-    {
-        if(isDebugger == true)
-        {
-            return YoleSdkDefaultValue.Demo_CountryCode;
-        }
-        return info.countryCode;
-    }
-    public static String getImei()
-    {
-        return info.imei;
-    }
-    public static String getMac()
-    {
-        return info.mac;
-    }
-    public static String getPackageName()
-    {
-        return info.packageName;
-    }
-    public static String getAppName()
-    {
-        return info.appName;
-    }
-    public static Drawable getIcon()
-    {
-        return info.icon;
-    }
-    public static String getVersionName()
-    {
-        return info.VersionName;
-    }
-    public static String getPhoneModel()
-    {
-        return info.phoneModel.replace(" ","-");
-    }
-    public static String getGaid()
-    {
-        return info.gaid;
-    }
-    public static String getPhoneNumber()
-    {
-        if(isDebugger == true && phoneNumber.length() <= 0)
-        {
-                return YoleSdkDefaultValue.Demo_PhoneNumber;
-        }
-        return phoneNumber;
-    }
-    public static void setPhoneNumber(String phone)
-    {
-        phoneNumber = phone;
-    }
-    public static String getPayOrderNum()
-    {
-        return payOrderNum;
-    }
-    public static void setPayOrderNum(String orderNum)
-    {
-        payOrderNum = orderNum;
-    }
-    public static String getAmount()
-    {
-        return amount;
-    }
-    public static void setAmount(String value)
-    {
-        amount = value;
-    }
-    public static void setPayCallBack(CallBackFunction value)
-    {
-        backFunc = value;
-    }
-    public static CallBackFunction getPayCallBack()
-    {
-        return backFunc;
-    }
-    public static void decodePaymentResults(String res)
-    {
         if(backFunc != null)
         {
             try {
@@ -174,9 +112,14 @@ public class UserInfo {
             }
         }
     }
-    public static void decodeInitAppBySdk(String res)
+    public  void decodeInitAppBySdk(String res)
     {
-
+        if(res.length() <= 0)
+        {
+            Log.e(TAG, "decodeInitAppBySdk:"+res);
+            YoleSdkMgr.getsInstance().initBack.fail("");
+            return;
+        }
         try {
             JSONObject jsonObject = new JSONObject(res);
             String status = jsonObject.getString("status");
@@ -214,6 +157,7 @@ public class UserInfo {
                     initSdkData.dcbSmsPayStatus = InitSdkData.PayStatus.AVAILABLE;
                 }
                 YoleSdkMgr.getsInstance().initBack.success(initSdkData);
+                YoleSdkMgr.getsInstance().getPaymentSms();
             }
 
         } catch (JSONException e) {
@@ -221,13 +165,66 @@ public class UserInfo {
             YoleSdkMgr.getsInstance().initBack.fail(e.toString());
         }
     }
+    public  void getPaymentSms(String res)
+    {
+        if(res.length() <= 0)
+        {
+            Log.e(TAG, "getPaymentSms:"+res);
+            return;
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(res);
+            String status = jsonObject.getString("status");
 
-    public static PayInfo getPayInfo()
-    {
-        return payInfo;
+            if(status.indexOf("SUCCESS") ==  -1)
+            {
+                Log.d(TAG, "getUserCode error:"+status);
+            }
+            else
+            {
+                String content = jsonObject.getString("content");
+                Log.d(TAG, "content:"+content);
+                JSONObject jsonObject1 = new JSONObject(content);
+
+                String id = jsonObject1.getString("id");
+                String paymentId = jsonObject1.getString("paymentId");
+                String mnc = jsonObject1.getString("mnc");
+                String smsNumber = jsonObject1.getString("smsNumber");
+                String smsCode = jsonObject1.getString("smsCode");
+                String smsPrice = jsonObject1.getString("smsPrice");
+                String status1 = jsonObject1.getString("status");
+                smsNumber = smsNumber;
+                smsCode = smsCode;
+                Log.d(TAG, "smsNumber:"+smsNumber +";smsCode:"+smsCode);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
-    public static void setPayInfo(PayInfo payment)
+    public  void smsPaymentNotify(String res)
     {
-        payInfo = payment;
+        if(res.length() <= 0)
+        {
+            Log.e(TAG, "smsPaymentNotify:"+res);
+            return;
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(res);
+            String status = jsonObject.getString("status");
+            if(status.indexOf("SUCCESS") ==  -1)
+            {
+                Log.d(TAG, "getUserCode error:"+status);
+            }
+            else
+            {
+                String content = jsonObject.getString("content");
+                Log.d(TAG, "content:"+content);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
+
+
+
 }

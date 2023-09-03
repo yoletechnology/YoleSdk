@@ -34,14 +34,13 @@ public class NetUtil{
         // 封装请求体
         MediaType mediaType = MediaType.parse("application/json");
 
-
         //创建请求对象
         RequestBody requestBody = RequestBody.create(mediaType, formBody.toString());
 
         Log.d(TAG, "appkey:"+ YoleSdkMgr.getsInstance().user.getAppkey());
         Log.d(TAG, "url:"+url);
         Log.d(TAG, "FormBody:"+formBody.toString());
-        Log.d(TAG, "RequestBody:"+requestBody.toString());
+
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("appkey",YoleSdkMgr.getsInstance().user.getAppkey())

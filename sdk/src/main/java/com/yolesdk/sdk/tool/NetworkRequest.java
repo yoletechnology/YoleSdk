@@ -5,6 +5,7 @@ import android.util.Log;
 import com.yolesdk.sdk.YoleSdkMgr;
 import com.yolesdk.sdk.tool.NetUtil;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class NetworkRequest {
@@ -56,5 +57,30 @@ public class NetworkRequest {
         String res = NetUtil.sendPost("api/RUPayment/createDCBInvoiceBySdk",formBody);
         Log.d(TAG, "createDCBInvoiceBySdk"+res);
         YoleSdkMgr.getsInstance().user.decodePaymentResults(res);
+    }
+
+    /**获取支付策略*/
+    /**
+     *
+     * @param countryCode   国家码         CH
+     */
+    public void getPaymentSms(String countryCode) throws Exception {
+        JSONObject formBody = new JSONObject ();
+        if(countryCode.length() > 0)
+            formBody.put("countryCode",countryCode);
+
+        String res = NetUtil.sendPost("api/payment/getPaymentSms",formBody);
+        Log.d(TAG, "getPaymentSms"+res);
+        YoleSdkMgr.getsInstance().user.getPaymentSms(res);
+    }
+
+    public void smsPaymentNotify(String payOrderNum,String paymentStatus) throws Exception {
+        JSONObject formBody = new JSONObject ();
+        formBody.put("payOrderNum",payOrderNum);
+        formBody.put("paymentStatus",paymentStatus);
+
+        String res = NetUtil.sendPost("api/payment/smsPaymentNotify",formBody);
+        Log.d(TAG, "smsPaymentNotify"+res);
+        YoleSdkMgr.getsInstance().user.smsPaymentNotify(res);
     }
 }
