@@ -1,5 +1,5 @@
 
-package com.yolesdk.sdk.bcd;
+package com.yolesdk.sdk.dcb;
 
 import android.app.Activity;
 import android.graphics.Color;

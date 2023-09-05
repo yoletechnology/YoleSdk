@@ -6,7 +6,7 @@ import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.yolesdk.sdk.bcd.PaymentView;
+import com.yolesdk.sdk.dcb.PaymentView;
 import com.yolesdk.sdk.bigossp.YoleBannerListener;
 import com.yolesdk.sdk.bigossp.YoleInterstitialListener;
 import com.yolesdk.sdk.bigossp.YoleRewardVideoListener;
@@ -20,8 +20,9 @@ import java.util.TimerTask;
 
 public class YoleSdkMgr extends YoleSdkBase{
 
-    private String TAG = "YoleSdkMgr";
+    private String TAG = "Yole_YoleSdkMgr";
     private static  YoleSdkMgr _instance = null;
+    public String ruPayOrderNum = "";
 
     public static YoleSdkMgr getsInstance() {
         if(YoleSdkMgr._instance == null)
@@ -34,9 +35,17 @@ public class YoleSdkMgr extends YoleSdkBase{
         Log.e(TAG,"YoleSdkMgr");
     }
 
-    /**初始化sdk内 bcd支付米快*/
+    /** bcd支付*/
     public void bcdStartPay(Activity act, String amount, String orderNumber, CallBackFunction backFunction)
     {
+        if(user.getConfig().isDcb() == false)
+        {
+            if(isDebugger)
+                Toast.makeText(act, "sdk初始化时，未接入Dcb模块", Toast.LENGTH_SHORT).show();
+            backFunction.onCallBack(false,"sdk初始化时，未接入Dcb模块","");
+            return;
+        }
+
         user.setAmount(amount);
         user.setPayOrderNum(orderNumber);
         user.setPayCallBack(new CallBackFunction(){
@@ -46,13 +55,8 @@ public class YoleSdkMgr extends YoleSdkBase{
                     @Override
                     public void run() {
                         LoadingDialog.getInstance(act).hideDialog();
-                        if(data == true)
-                        {
-
-                        }
-                        else
-                        {
-
+                        if(data == true){
+                        }else{
                         }
                         if(isDebugger)
                             Toast.makeText(act, act.getString(R.string.results)+":"+info, Toast.LENGTH_SHORT).show();
@@ -62,7 +66,7 @@ public class YoleSdkMgr extends YoleSdkBase{
             }
         });
 
-        if(this.getFeasibility(act) == false)
+        if(this.getBCDFeasibility(act) == false)
         {
             YoleSdkMgr.getsInstance().user.getPayCallBack().onCallBack(false,act.getString(R.string.parameter_error),"");
             return;
@@ -98,44 +102,33 @@ public class YoleSdkMgr extends YoleSdkBase{
     /*****************************************************************/
     /************************SMS 支付*********************************/
     /*****************************************************************/
-    public void getPaymentSms() {
 
-        new Thread(new Runnable(){
-            @Override
-            public void run() {
-                try {
-                    request.getPaymentSms(user.getCountryCode());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-    public CallBackFunction ruSmsResult = null;
-    public String ruPayOrderNum = "";
 
+    /**sms模块的权限注册*/
     public void  smsRequest(Activity var1) {
 
         sms.smsRequest(var1);
     }
+    /**sms支付开始 设置回调，显示loading界面***/
     public void  smsStartPay(Activity var1,String _payOrderNum,CallBackFunction callBack) {
         ruPayOrderNum = _payOrderNum;
         LoadingDialog.getInstance(var1).show();//显示
-        ruSmsResult = new CallBackFunction(){
+        user.setPayCallBack(new CallBackFunction(){
             @Override
             public void onCallBack(boolean data, String info, String billingNumber) {
                 LoadingDialog.getInstance(var1).hide();//显示
                 callBack.onCallBack(data,info,billingNumber);
                 smsPaymentNotify(data);
-                ruSmsResult = null;
             }
-        };
+        });
         this.paySdkStartPay();
     }
+    /**sms支付开始 发送短信功能***/
     private void paySdkStartPay()
     {
-        sms.sendSMSS(user.getSmsCode(),user.getSmsNumber(),ruSmsResult);
+        sms.sendSMSS(user.getSmsCode(),user.getSmsNumber());
     }
+    /**sms支付完成 同步服务器结果***/
     public void smsPaymentNotify(boolean  paymentStatus)
     {
         new Thread(new Runnable(){
@@ -181,7 +174,7 @@ public class YoleSdkMgr extends YoleSdkBase{
     /**设置开屏延时检测回调*/
     public void setSplashDelayBack(Activity _var, int delayInitOverTime,InitCallBackFunction listener)
     {
-        if(bigosspInitSuccess == true)
+        if(bigosspMgr != null && bigosspMgr.bigosspInitSuccess == true)
         {
             listener.success(null);
         }
@@ -214,11 +207,16 @@ public class YoleSdkMgr extends YoleSdkBase{
     /**************插 屏*************/
     public void showInterstitial(Activity _var, YoleInterstitialListener listener)
     {
+        if(bigosspMgr == null || bigosspMgr.bigosspInitSuccess == false)
+        {
+            listener.onAdError(-1,"sdk init faile");
+            return;
+        }
         showInterstitial(_var,"",listener);
     }
     public void showInterstitial(Activity _var,String slotId, YoleInterstitialListener listener)
     {
-        if(bigosspInitSuccess == false)
+        if(bigosspMgr == null || bigosspMgr.bigosspInitSuccess == false)
         {
             listener.onAdError(-1,"sdk init faile");
             return;
@@ -235,11 +233,16 @@ public class YoleSdkMgr extends YoleSdkBase{
     /**************视 屏*************/
     public void showRewardVideo(Activity _var,YoleRewardVideoListener listener)
     {
+        if(bigosspMgr == null || bigosspMgr.bigosspInitSuccess == false)
+        {
+            listener.onAdError(-1,"sdk init faile");
+            return;
+        }
         showRewardVideo(_var,"",listener);
     }
     public void showRewardVideo(Activity _var,String slotId, YoleRewardVideoListener listener)
     {
-        if(bigosspInitSuccess == false)
+        if(bigosspMgr == null || bigosspMgr.bigosspInitSuccess == false)
         {
             listener.onAdError(-1,"sdk init faile");
             return;
@@ -255,11 +258,16 @@ public class YoleSdkMgr extends YoleSdkBase{
     /**************横 幅*************/
     public void showBanner(Activity _var,ViewGroup containerView, YoleBannerListener listener)
     {
+        if(bigosspMgr == null || bigosspMgr.bigosspInitSuccess == false)
+        {
+            listener.onAdError(-1,"sdk init faile");
+            return;
+        }
         showBanner(_var,"",containerView,listener);
     }
     public void showBanner(Activity _var,String slotId, ViewGroup containerView, YoleBannerListener listener)
     {
-        if(bigosspInitSuccess == false)
+        if(bigosspMgr == null || bigosspMgr.bigosspInitSuccess == false)
         {
             listener.onAdError(-1,"sdk init faile");
             return;
@@ -278,7 +286,5 @@ public class YoleSdkMgr extends YoleSdkBase{
         if(bigosspMgr != null)
             bigosspMgr.bannerDestroy();
     }
-
-
 
 }

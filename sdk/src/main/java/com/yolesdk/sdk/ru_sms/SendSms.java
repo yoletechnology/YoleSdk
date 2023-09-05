@@ -1,4 +1,4 @@
-package com.yolesdk.sdk.sms;
+package com.yolesdk.sdk.ru_sms;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.yolesdk.sdk.YoleSdkMgr;
 import com.yolesdk.sdk.callback.CallBackFunction;
 
 import java.util.ArrayList;
@@ -26,10 +27,8 @@ import java.util.ArrayList;
 public class SendSms {
     private String TAG = "Yole_SendSms";
     private Activity var =  null;
-//    protected Context context =  null;
     private static final int SEND_SMS = 100;
     private static final String SMS_SENT_ACTION = "SMS_SENT";
-    public CallBackFunction backFunction = null;
 
     public SendSms (Context  _context)
     {
@@ -93,10 +92,8 @@ public class SendSms {
 
     //发送短信
     @SuppressLint("Range")
-    public void sendSMSS(String content, String phone, CallBackFunction _backFunction) {
+    public void sendSMSS(String content, String phone) {
 
-
-        backFunction = _backFunction;
         Log.e(TAG,"手机"+phone);
         var.registerReceiver(smsSentReceiver, new IntentFilter(SMS_SENT_ACTION));
 
@@ -135,8 +132,7 @@ public class SendSms {
     {
         Log.i(TAG,info);
         Toast.makeText(var,info, Toast.LENGTH_SHORT).show();
-        backFunction.onCallBack(data,info,billingNumber);
-        backFunction = null;
+        YoleSdkMgr.getsInstance().user.getPayCallBack().onCallBack(data,info,billingNumber);
     }
 
 

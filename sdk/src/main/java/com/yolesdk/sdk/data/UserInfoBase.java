@@ -3,6 +3,8 @@ package com.yolesdk.sdk.data;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+
+import com.yolesdk.sdk.data.init.YoleInitConfig;
 import com.yolesdk.sdk.tool.PhoneInfo;
 import com.yolesdk.sdk.callback.CallBackFunction;
 

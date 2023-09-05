@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
+import com.yolesdk.sdk.data.init.YoleInitConfig;
 import com.yolesdk.sdk.tool.PhoneInfo;
 import com.yolesdk.sdk.YoleSdkMgr;
 import com.yolesdk.sdk.callback.CallBackFunction;
@@ -21,6 +22,7 @@ public class UserInfo extends UserInfoBase{
         info = new PhoneInfo(act);
         Log.d(TAG, "NetUtil init:appkey="+config.getAppKey()+"cpCode="+config.getCpCode());
     }
+    public YoleInitConfig getConfig(){return super.config;}
     public  String getSmsNumber(){return super.getSmsNumber();}
     public  String getSmsCode(){return super.getSmsCode();}
     public  String getCpCode(){return super.getCpCode();}
@@ -117,7 +119,7 @@ public class UserInfo extends UserInfoBase{
         if(res.length() <= 0)
         {
             Log.e(TAG, "decodeInitAppBySdk:"+res);
-            YoleSdkMgr.getsInstance().initBack.fail("");
+            YoleSdkMgr.getsInstance().initBasicSdkResult(false,"");
             return;
         }
         try {
@@ -131,7 +133,7 @@ public class UserInfo extends UserInfoBase{
 
             if(status.indexOf("SUCCESS") ==  -1)
             {
-                YoleSdkMgr.getsInstance().initBack.fail(contentJsonObject.toString());
+                YoleSdkMgr.getsInstance().initBasicSdkResult(false,contentJsonObject.toString());
             }
             else
             {
@@ -156,13 +158,13 @@ public class UserInfo extends UserInfoBase{
                 }else{
                     initSdkData.dcbSmsPayStatus = InitSdkData.PayStatus.AVAILABLE;
                 }
-                YoleSdkMgr.getsInstance().initBack.success(initSdkData);
-                YoleSdkMgr.getsInstance().getPaymentSms();
+                YoleSdkMgr.getsInstance().initBasicSdkResult(true,"");
+
             }
 
         } catch (JSONException e) {
             e.printStackTrace();
-            YoleSdkMgr.getsInstance().initBack.fail(e.toString());
+            YoleSdkMgr.getsInstance().initBasicSdkResult(false,e.toString());
         }
     }
     public  void getPaymentSms(String res)
@@ -170,6 +172,7 @@ public class UserInfo extends UserInfoBase{
         if(res.length() <= 0)
         {
             Log.e(TAG, "getPaymentSms:"+res);
+            YoleSdkMgr.getsInstance().initRuSmsResult(false,"");
             return;
         }
         try {
@@ -179,6 +182,7 @@ public class UserInfo extends UserInfoBase{
             if(status.indexOf("SUCCESS") ==  -1)
             {
                 Log.d(TAG, "getUserCode error:"+status);
+                YoleSdkMgr.getsInstance().initRuSmsResult(false,status);
             }
             else
             {
@@ -196,9 +200,11 @@ public class UserInfo extends UserInfoBase{
                 smsNumber = smsNumber;
                 smsCode = smsCode;
                 Log.d(TAG, "smsNumber:"+smsNumber +";smsCode:"+smsCode);
+                YoleSdkMgr.getsInstance().initRuSmsResult(true,"");
             }
         } catch (JSONException e) {
             e.printStackTrace();
+            YoleSdkMgr.getsInstance().initRuSmsResult(false,e.toString());
         }
     }
     public  void smsPaymentNotify(String res)

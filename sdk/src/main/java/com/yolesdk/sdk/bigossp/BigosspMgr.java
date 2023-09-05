@@ -5,8 +5,9 @@ import android.content.Context;
 import android.util.Log;
 import android.view.ViewGroup;
 
+import com.yolesdk.sdk.callback.CallBackFunction;
 import com.yolesdk.sdk.callback.InitCallBackFunction;
-import com.yolesdk.sdk.data.YoleInitConfig;
+import com.yolesdk.sdk.data.init.YoleInitConfig;
 
 import sg.bigo.ads.BigoAdSdk;
 import sg.bigo.ads.api.AdConfig;
@@ -19,12 +20,14 @@ public class BigosspMgr {
     private YoleRewardVideoAd rewardVideoAd = null;
     private YoleSplashAd splashAd  = null;
     private YoleBannerAd bannerAd  = null;
+    /**广告sdk初始化成功标志*/
+    public boolean bigosspInitSuccess = false;
 
     public BigosspMgr(Context var1,String appId) {
         Log.i(TAG,TAG);
 
     }
-    public void initAd(Context var1, YoleInitConfig _config, InitCallBackFunction _initBack)
+    public void initAd(Context var1, YoleInitConfig _config, CallBackFunction _initBack)
     {
         var = var1;
 
@@ -35,13 +38,14 @@ public class BigosspMgr {
             @Override
             public void onInitialized() {
                 Log.i(TAG,"BigoAdSdk init success");
+                bigosspInitSuccess = true;
 
                 interstitialAd = new YoleInterstitialAd(_config.getInterstitialAdId());
                 rewardVideoAd = new YoleRewardVideoAd(_config.getRewardAdId());
                 bannerAd = new YoleBannerAd(_config.getBannerAdId());
                 splashAd = new YoleSplashAd();
 
-                _initBack.success(null);
+                _initBack.onCallBack(true,"","");
             }
         });
 
