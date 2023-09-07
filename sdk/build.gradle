@@ -71,6 +71,4 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
-    /*******************bigossp 广告**************************/
-    implementation 'com.bigossp:bigo-ads:4.0.2'
 }

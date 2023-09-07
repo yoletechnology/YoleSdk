@@ -8,7 +8,6 @@ public class YoleInitConfig {
     private String appKey="";
     private String cpCode="";
     private boolean debug=false;
-    private  YoleInitBigosspConfig bigosspConfig = null;
     private  YoleInitDcbConfig dcbConfig = null;
     private  YoleInitRuSmsConfig ruSmsConfig = null;
 
@@ -49,37 +48,7 @@ public class YoleInitConfig {
     public boolean isDebug() {
         return this.debug;
     }
-    /******************************************************/
-    /******************* bigossp信息**************************/
-    /******************************************************/
-    public String getBannerAdId() {
-        if(this.isBigossp() == false)
-        {
-            return "";
-        }
-        return this.bigosspConfig.getBannerAdId();
-    }
-    public String getInterstitialAdId() {
-        if(this.isBigossp() == false)
-        {
-            return "";
-        }
-        return this.bigosspConfig.getInterstitialAdId();
-    }
-    public String getRewardAdId() {
-        if(this.isBigossp() == false)
-        {
-            return "";
-        }
-        return this.bigosspConfig.getRewardAdId();
-    }
-    public  boolean isBigossp() {
-        return this.bigosspConfig != null;
-    }
-    public  YoleInitConfig setBigosspConfig(YoleInitBigosspConfig var1) {
-        this.bigosspConfig = var1;
-        return this;
-    }
+
     /******************************************************/
     /*******************dcb信息**************************/
     /******************************************************/
