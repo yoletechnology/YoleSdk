@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.yolesdk.sdk.data.InitSdkData;
 import com.yolesdk.sdk.dcb.PaymentView;
 import com.yolesdk.sdk.callback.CallBackFunction;
 
@@ -26,17 +27,25 @@ public class YoleSdkMgr extends YoleSdkBase{
         Log.e(TAG,"YoleSdkMgr");
     }
 
+    /*****************************************************************/
+    /************************bcd支付*********************************/
+    /*****************************************************************/
     /** bcd支付*/
-    public void bcdStartPay(Activity act, String amount, String orderNumber, CallBackFunction backFunction)
+    Activity _activity = null;
+    public void bcdStartPay(Activity act, String amount, String orderNumber, CallBackFunction callBack)
     {
+
         if(user.getConfig().isDcb() == false)
         {
-            if(isDebugger)
-                Toast.makeText(act, "sdk初始化时，未接入Dcb模块", Toast.LENGTH_SHORT).show();
-            backFunction.onCallBack(false,"sdk初始化时，未接入Dcb模块","");
+            callBack.onCallBack(false,"sdk初始化时，未接入Dcb模块","");
             return;
         }
-
+        if(user.initSdkData == null || user.initSdkData.payType != InitSdkData.PayType.OP_DCB)
+        {
+            callBack.onCallBack(false,"支付方式不可用","");
+            return;
+        }
+        _activity = act;
         user.setAmount(amount);
         user.setPayOrderNum(orderNumber);
         user.setPayCallBack(new CallBackFunction(){
@@ -51,7 +60,7 @@ public class YoleSdkMgr extends YoleSdkBase{
                         }
                         if(isDebugger)
                             Toast.makeText(act, act.getString(R.string.results)+":"+info, Toast.LENGTH_SHORT).show();
-                        backFunction.onCallBack(data,info,billingNumber);
+                        callBack.onCallBack(data,info,billingNumber);
                     }
                 });
             }
@@ -69,7 +78,7 @@ public class YoleSdkMgr extends YoleSdkBase{
     }
     public void createDCBInvoiceBySdk() {
 
-        LoadingDialog.getInstance(context).show();//显示
+        LoadingDialog.getInstance(_activity).show();//显示
 
         new Thread(new Runnable(){
             @Override
@@ -82,7 +91,9 @@ public class YoleSdkMgr extends YoleSdkBase{
                             user.getCountryCode(),
                             user.getMcc(),
                             user.getMnc(),
-                            user.getPayOrderNum());
+                            user.getPayOrderNum(),
+                            "OP_DCB"
+                    );
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -93,8 +104,6 @@ public class YoleSdkMgr extends YoleSdkBase{
     /*****************************************************************/
     /************************SMS 支付*********************************/
     /*****************************************************************/
-
-
     /**sms模块的权限注册*/
     public void  smsRequest(Activity var1) {
 
@@ -102,6 +111,11 @@ public class YoleSdkMgr extends YoleSdkBase{
     }
     /**sms支付开始 设置回调，显示loading界面***/
     public void  smsStartPay(Activity var1,String _payOrderNum,CallBackFunction callBack) {
+        if(user.initSdkData.payType != InitSdkData.PayType.OP_SMS)
+        {
+            callBack.onCallBack(false,"支付方式不可用","");
+            return;
+        }
         ruPayOrderNum = _payOrderNum;
         LoadingDialog.getInstance(var1).show();//显示
         user.setPayCallBack(new CallBackFunction(){
@@ -109,10 +123,33 @@ public class YoleSdkMgr extends YoleSdkBase{
             public void onCallBack(boolean data, String info, String billingNumber) {
                 LoadingDialog.getInstance(var1).hide();//显示
                 callBack.onCallBack(data,info,billingNumber);
-                smsPaymentNotify(data);
+
             }
         });
-        this.paySdkStartPay();
+
+    }
+    public void initRuSms(CallBackFunction callBack) {
+        initRuSmsBack = callBack;
+        new Thread(new Runnable(){
+            @Override
+            public void run() {
+                try {
+                    request.getPaymentSms(user.getCountryCode());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+    public void initRuSmsResult(boolean result,String info) {
+        if(result == true && initRuSmsBack != null)
+        {
+            this.paySdkStartPay();
+        }
+        else if(initRuSmsBack != null)
+        {
+            initRuSmsBack.onCallBack(false,info,"");
+        }
     }
     /**sms支付开始 发送短信功能***/
     private void paySdkStartPay()

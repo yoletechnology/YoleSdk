@@ -1,8 +1,8 @@
 package com.yolesdk.sdk.data;
 
 public class YoleSdkDefaultValue {
-    public static String Demo_CpCode = "60000677";
-    public static String Demo_Appkey = "81000004";
+    public static String Demo_CpCode = "60000003";
+    public static String Demo_Appkey = "80000004";
     public static String Demo_PhoneNumber = "79219081334";
     public static String Demo_CountryCode_RU = "RU";
     public static String Demo_CountryCode = Demo_CountryCode_RU;

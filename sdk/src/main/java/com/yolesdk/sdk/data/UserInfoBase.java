@@ -59,17 +59,17 @@ public class UserInfoBase {
     {
         if(config.isDebug() == true)
         {
-            return info.mcc_network == "" ? info.mcc_sim : info.mcc_network;
+            return "250";
         }
-        return info.mcc_network;
+        return info.mcc_sim;
     }
     public  String getMnc()
     {
         if(config.isDebug() == true)
         {
-            return info.mnc_network == "" ? info.mnc_sim : info.mnc_network;
+            return "99";
         }
-        return info.mnc_network;
+        return info.mnc_sim;
     }
     public  String getCountryCode()
     {

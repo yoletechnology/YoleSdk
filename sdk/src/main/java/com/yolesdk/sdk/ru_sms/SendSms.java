@@ -131,8 +131,9 @@ public class SendSms {
     public void smeResult(boolean data,String info,String billingNumber)
     {
         Log.i(TAG,info);
-        Toast.makeText(var,info, Toast.LENGTH_SHORT).show();
-        YoleSdkMgr.getsInstance().user.getPayCallBack().onCallBack(data,info,billingNumber);
+        YoleSdkMgr.getsInstance().smsPaymentNotify(data);
+//        Toast.makeText(var,info, Toast.LENGTH_SHORT).show();
+//        YoleSdkMgr.getsInstance().user.getPayCallBack().onCallBack(data,info,billingNumber);
     }
 
 

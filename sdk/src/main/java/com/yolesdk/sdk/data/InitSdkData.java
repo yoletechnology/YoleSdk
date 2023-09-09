@@ -1,11 +1,12 @@
 package com.yolesdk.sdk.data;
 
 public class InitSdkData {
-    public enum PayStatus {
-        /**可用*/
-        AVAILABLE,
+    public enum PayType {
         /**不可用*/
-        UNAVAILABLE
+        UNAVAILABLE,
+
+        OP_DCB,
+        OP_SMS,
     }
     /**用户编码*/
     public String userCode = "";
@@ -19,6 +20,6 @@ public class InitSdkData {
     public String currencySymbol = "";
     /**支持小数点位数*/
     public int currencyDecimal = 0;
-    /**DCB支付状态*/
-    public PayStatus dcbSmsPayStatus = PayStatus.AVAILABLE;
+    /**方式*/
+    public PayType payType = PayType.UNAVAILABLE;
 }

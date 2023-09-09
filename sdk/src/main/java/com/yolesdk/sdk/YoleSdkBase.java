@@ -42,16 +42,19 @@ public class YoleSdkBase {
         this.init(_var1,_config);
 
 
-        //初始化 ruSms的回调
-        CallBackFunction next1 = new CallBackFunction(){
-            @Override
-            public void onCallBack(boolean result, String info1, String info2) {
-                Log.i(TAG,"initRuSms:"+result);
-                if(result == true){
-                }else{
-                }
-            }
-        };
+//        //初始化 ruSms的回调
+//        if(_config.isRuSms() == true) {
+//            YoleSdkMgr.getsInstance().initRuSms(next1);
+//        }
+//        CallBackFunction next1 = new CallBackFunction(){
+//            @Override
+//            public void onCallBack(boolean result, String info1, String info2) {
+//                Log.i(TAG,"initRuSms:"+result);
+//                if(result == true){
+//                }else{
+//                }
+//            }
+//        };
         //初始化 基本信息的回调
         CallBackFunction next2 = new CallBackFunction(){
             @Override
@@ -59,9 +62,6 @@ public class YoleSdkBase {
                 Log.i(TAG,"initBasicSdk:"+result);
                 if(result == true){
                     _initBack.success(user.initSdkData);
-                    if(_config.isRuSms() == true) {
-                        YoleSdkMgr.getsInstance().initRuSms(next1);
-                    }
                 }else{
                     _initBack.fail(info1);
                 }

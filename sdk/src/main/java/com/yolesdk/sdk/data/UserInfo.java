@@ -9,8 +9,11 @@ import com.yolesdk.sdk.tool.PhoneInfo;
 import com.yolesdk.sdk.YoleSdkMgr;
 import com.yolesdk.sdk.callback.CallBackFunction;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class UserInfo extends UserInfoBase{
     private static String TAG = "Yole_UserInfo";
@@ -91,7 +94,6 @@ public class UserInfo extends UserInfoBase{
                 JSONObject jsonObject = new JSONObject(res);
                 String status = jsonObject.getString("status");
                 String errorCode = jsonObject.getString("errorCode");
-                String content = jsonObject.getString("content");
                 String message = jsonObject.getString("message");
 
                 if(status.indexOf("SUCCESS") ==  -1)
@@ -100,6 +102,7 @@ public class UserInfo extends UserInfoBase{
                 }
                 else
                 {
+                    String content = jsonObject.getString("content");
                     JSONObject contentJsonObject = new JSONObject(content);
                     String content1 = contentJsonObject.getString("content");
                     JSONObject content1JsonObject = new JSONObject(content1);
@@ -126,17 +129,18 @@ public class UserInfo extends UserInfoBase{
             JSONObject jsonObject = new JSONObject(res);
             String status = jsonObject.getString("status");
             String errorCode = jsonObject.getString("errorCode");
-            String content = jsonObject.getString("content");
             String message = jsonObject.getString("message");
-
-            JSONObject contentJsonObject = new JSONObject(content);
 
             if(status.indexOf("SUCCESS") ==  -1)
             {
-                YoleSdkMgr.getsInstance().initBasicSdkResult(false,contentJsonObject.toString());
+                Log.d(TAG, "decodeInitAppBySdk error:"+status);
+                YoleSdkMgr.getsInstance().initBasicSdkResult(false,"errorCode:"+errorCode+";message="+message);
             }
             else
             {
+
+                String content = jsonObject.getString("content");
+                JSONObject contentJsonObject = new JSONObject(content);
 
                 String userCode = contentJsonObject.getString("userCode");
                 String productName = contentJsonObject.getString("productName");
@@ -144,7 +148,7 @@ public class UserInfo extends UserInfoBase{
                 String companyName = contentJsonObject.getString("companyName");
                 String currencySymbol = contentJsonObject.getString("currencySymbol");
 //                int currencyDecimal = contentJsonObject.getInt("currencyDecimal");
-                String dcbSmsPayStatus = contentJsonObject.getString("dcbSmsPayStatus");
+                JSONArray paymentKeyList = contentJsonObject.getJSONArray("paymentKeyList");
 
                 initSdkData = new InitSdkData();
                 initSdkData.userCode = userCode;
@@ -153,12 +157,19 @@ public class UserInfo extends UserInfoBase{
                 initSdkData.companyName = companyName;
                 initSdkData.currencySymbol = currencySymbol;
 //                initSdkData.currencyDecimal = currencyDecimal;
-                if(dcbSmsPayStatus.indexOf("UNAVAILABLE") != -1){
-                    initSdkData.dcbSmsPayStatus = InitSdkData.PayStatus.UNAVAILABLE;
-                }else{
-                    initSdkData.dcbSmsPayStatus = InitSdkData.PayStatus.AVAILABLE;
+                if(paymentKeyList.length() <= 0)
+                {
+                    initSdkData.payType = InitSdkData.PayType.UNAVAILABLE;
                 }
-                YoleSdkMgr.getsInstance().initBasicSdkResult(true,"");
+                else if(paymentKeyList.getString(0).indexOf("OP_DCB") != -1)
+                {
+                    initSdkData.payType = InitSdkData.PayType.OP_DCB;
+                }
+                else if(paymentKeyList.getString(0).indexOf("OP_SMS") != -1)
+                {
+                    initSdkData.payType = InitSdkData.PayType.OP_SMS;
+                }
+                YoleSdkMgr.getsInstance().initBasicSdkResult(true,"errorCode:"+errorCode+";message="+message);
 
             }
 
@@ -178,11 +189,13 @@ public class UserInfo extends UserInfoBase{
         try {
             JSONObject jsonObject = new JSONObject(res);
             String status = jsonObject.getString("status");
+            String errorCode = jsonObject.getString("errorCode");
+            String message = jsonObject.getString("message");
 
             if(status.indexOf("SUCCESS") ==  -1)
             {
                 Log.d(TAG, "getUserCode error:"+status);
-                YoleSdkMgr.getsInstance().initRuSmsResult(false,status);
+                YoleSdkMgr.getsInstance().initRuSmsResult(false,"errorCode:"+errorCode+";message="+message);
             }
             else
             {
@@ -217,14 +230,19 @@ public class UserInfo extends UserInfoBase{
         try {
             JSONObject jsonObject = new JSONObject(res);
             String status = jsonObject.getString("status");
+            String errorCode = jsonObject.getString("errorCode");
+            String message = jsonObject.getString("message");
             if(status.indexOf("SUCCESS") ==  -1)
             {
-                Log.d(TAG, "getUserCode error:"+status);
+                Log.d(TAG, "smsPaymentNotify error:"+status);
+                YoleSdkMgr.getsInstance().user.getPayCallBack().onCallBack(false,"errorCode:"+errorCode+";message="+message,"");
             }
             else
             {
                 String content = jsonObject.getString("content");
-                Log.d(TAG, "content:"+content);
+                JSONObject jsonObject1 = new JSONObject(content);
+                String billingNumber = jsonObject1.getString("billingNumber");
+                YoleSdkMgr.getsInstance().user.getPayCallBack().onCallBack(true,"errorCode:"+errorCode+";message="+message,billingNumber);
             }
         } catch (JSONException e) {
             e.printStackTrace();

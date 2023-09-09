@@ -12,6 +12,13 @@ public class NetworkRequest {
     public String TAG = "Yole_NetworkRequest";
     public void initAppBySdk(String mobile,String gaid,String userAgent,String imei,String mac,String countryCode,String mcc,String mnc,String cpCode) throws Exception {
 
+        Log.d(TAG, "initAppBySdk cpCode:"+cpCode+";countryCode:"+countryCode);
+        if(cpCode.length() <= 0 || countryCode.length() <= 0 )
+        {
+            YoleSdkMgr.getsInstance().initBasicSdkResult(false,"cpCode 或者 countryCode 无效");
+            return;
+        }
+
         JSONObject formBody = new JSONObject ();
         if(mobile.length() > 0)
             formBody.put("mobile",mobile);
@@ -23,20 +30,19 @@ public class NetworkRequest {
             formBody.put("imei",imei);
         if(mac.length() > 0)
             formBody.put("mac",mac);
-        if(countryCode.length() > 0)
-            formBody.put("countryCode",countryCode);
         if(mcc.length() > 0)
             formBody.put("mcc",mcc);
         if(mnc.length() > 0)
             formBody.put("mnc",mnc);
-        if(cpCode.length() > 0)
-            formBody.put("cpCode",cpCode);
+
+        formBody.put("countryCode",countryCode);
+        formBody.put("cpCode",cpCode);
 
         String res = NetUtil.sendPost("api/user/initAppBySdk",formBody);
         Log.d(TAG, "initAppBySdk"+res);
         YoleSdkMgr.getsInstance().user.decodeInitAppBySdk(res);
     }
-    public void createDCBInvoiceBySdk(String cpCode,String mobile,String amount,String countryCode,String mcc,String mnc,String orderNumber) throws Exception {
+    public void createDCBInvoiceBySdk(String cpCode,String mobile,String amount,String countryCode,String mcc,String mnc,String orderNumber,String paymentKey) throws Exception {
 
         JSONObject formBody = new JSONObject ();
         if(cpCode.length() > 0)
@@ -53,6 +59,8 @@ public class NetworkRequest {
             formBody.put("mnc",mnc);
         if(orderNumber.length() > 0)
             formBody.put("orderNumber",orderNumber);
+        if(paymentKey.length() > 0)
+            formBody.put("paymentKey",paymentKey);
 
         String res = NetUtil.sendPost("api/RUPayment/createDCBInvoiceBySdk",formBody);
         Log.d(TAG, "createDCBInvoiceBySdk"+res);
