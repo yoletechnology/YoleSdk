@@ -2,6 +2,8 @@
 package com.yolesdk.sdk.dcb;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -16,10 +18,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+//import com.bumptech.glide.Glide;
 import com.yolesdk.sdk.YoleSdkMgr;
 import com.yolesdk.sdk.tool.Tool;
 import com.yolesdk.sdk.R;
+
+import java.io.IOException;
+import java.net.URL;
 
 public class PaymentView extends Activity {
     public String TAG = "Yole_PaymentView";
@@ -55,7 +60,24 @@ public class PaymentView extends Activity {
 
 
         //获取网络图片的URL
-        Glide.with(this).load(icon).into(((ImageView) findViewById(R.id.iv_ing)));
+        if(YoleSdkMgr.getsInstance().user.initSdkData.productIconBitmap!= null)
+        {
+            ImageView imageView = (ImageView) findViewById(R.id.iv_ing);
+            imageView.setImageBitmap(YoleSdkMgr.getsInstance().user.initSdkData.productIconBitmap);
+        }
+        else
+        {
+            try {
+                URL url = new URL(icon);
+                requestImg(url);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+//        Glide.with(PaymentView.this).load(icon).into(imageView);
+
+
 
         EditText phoneEdit = findViewById(R.id.phone);
         phoneEdit.setText(YoleSdkMgr.getsInstance().user.getPhoneNumber());
@@ -118,5 +140,32 @@ public class PaymentView extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
+    }
+
+    private void requestImg(final URL imgUrl)
+    {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap bitmap = null;
+                try {
+                    bitmap = BitmapFactory.decodeStream(imgUrl.openStream());
+
+                    showImg(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+    private void showImg(final Bitmap bitmap){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ImageView imageView = (ImageView) findViewById(R.id.iv_ing);
+                YoleSdkMgr.getsInstance().user.initSdkData.productIconBitmap = bitmap;
+                imageView.setImageBitmap(bitmap);
+            }
+        });
     }
 }

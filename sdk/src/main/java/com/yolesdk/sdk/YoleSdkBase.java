@@ -2,6 +2,8 @@ package com.yolesdk.sdk;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -12,6 +14,8 @@ import com.yolesdk.sdk.data.init.YoleInitConfig;
 import com.yolesdk.sdk.ru_sms.SendSms;
 import com.yolesdk.sdk.tool.NetworkRequest;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.Timer;
 
 public class YoleSdkBase {
@@ -46,15 +50,26 @@ public class YoleSdkBase {
 //        if(_config.isRuSms() == true) {
 //            YoleSdkMgr.getsInstance().initRuSms(next1);
 //        }
-//        CallBackFunction next1 = new CallBackFunction(){
-//            @Override
-//            public void onCallBack(boolean result, String info1, String info2) {
-//                Log.i(TAG,"initRuSms:"+result);
-//                if(result == true){
-//                }else{
-//                }
-//            }
-//        };
+        CallBackFunction next1 = new CallBackFunction(){
+            @Override
+            public void onCallBack(boolean result, String info1, String info2) {
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Bitmap bitmap = null;
+                        try {
+                            String  icon = YoleSdkMgr.getsInstance().user.initSdkData.productIcon;
+                            URL url = new URL(icon);
+                            YoleSdkMgr.getsInstance().user.initSdkData.productIconBitmap = BitmapFactory.decodeStream(url.openStream());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+            }
+        };
+
         //初始化 基本信息的回调
         CallBackFunction next2 = new CallBackFunction(){
             @Override
@@ -62,6 +77,7 @@ public class YoleSdkBase {
                 Log.i(TAG,"initBasicSdk:"+result);
                 if(result == true){
                     _initBack.success(user.initSdkData);
+                    next1.onCallBack(false,null,null);
                 }else{
                     _initBack.fail(info1);
                 }

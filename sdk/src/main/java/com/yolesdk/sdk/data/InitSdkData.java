@@ -1,5 +1,7 @@
 package com.yolesdk.sdk.data;
 
+import android.graphics.Bitmap;
+
 public class InitSdkData {
     public enum PayType {
         /**不可用*/
@@ -14,6 +16,8 @@ public class InitSdkData {
     public String productName = "";
     /**商品图标*/
     public String productIcon = "";
+    /**商品图标*/
+    public Bitmap productIconBitmap = null;
     /**公司名称*/
     public String companyName = "";
     /**货币符号*/
