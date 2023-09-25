@@ -147,6 +147,7 @@ public class UserInfo extends UserInfoBase{
                 String productIcon = contentJsonObject.getString("productIcon");
                 String companyName = contentJsonObject.getString("companyName");
                 String currencySymbol = contentJsonObject.getString("currencySymbol");
+                boolean adsOpen = contentJsonObject.optBoolean("adsOpen");
 //                int currencyDecimal = contentJsonObject.getInt("currencyDecimal");
                 JSONArray paymentKeyList = contentJsonObject.getJSONArray("paymentKeyList");
 
@@ -156,6 +157,7 @@ public class UserInfo extends UserInfoBase{
                 initSdkData.productIcon = productIcon;
                 initSdkData.companyName = companyName;
                 initSdkData.currencySymbol = currencySymbol;
+                initSdkData.adsOpen = adsOpen;
 //                initSdkData.currencyDecimal = currencyDecimal;
                 if(paymentKeyList.length() <= 0)
                 {

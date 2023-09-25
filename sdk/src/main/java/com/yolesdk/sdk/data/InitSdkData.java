@@ -22,6 +22,8 @@ public class InitSdkData {
     public String companyName = "";
     /**货币符号*/
     public String currencySymbol = "";
+    /**是否开启广告*/
+    public boolean adsOpen = false;
     /**支持小数点位数*/
     public int currencyDecimal = 0;
     /**方式*/
