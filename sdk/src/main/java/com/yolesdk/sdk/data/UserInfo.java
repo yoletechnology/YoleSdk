@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class UserInfo extends UserInfoBase{
     private static String TAG = "Yole_UserInfo";
@@ -150,7 +151,11 @@ public class UserInfo extends UserInfoBase{
                 boolean adsOpen = contentJsonObject.optBoolean("adsOpen");
 //                int currencyDecimal = contentJsonObject.getInt("currencyDecimal");
                 JSONArray paymentKeyList = contentJsonObject.getJSONArray("paymentKeyList");
-
+                List<String> list = new ArrayList<>();
+                for(int i=0;i<paymentKeyList.length();i++)
+                {
+                    list.add(paymentKeyList.get(i).toString());
+                }
                 initSdkData = new InitSdkData();
                 initSdkData.userCode = userCode;
                 initSdkData.productName = productName;
@@ -163,14 +168,26 @@ public class UserInfo extends UserInfoBase{
                 {
                     initSdkData.payType = InitSdkData.PayType.UNAVAILABLE;
                 }
-                else if(paymentKeyList.getString(0).indexOf("OP_DCB") != -1)
+                else if(list.indexOf("OP_DCB") != -1)
                 {
                     initSdkData.payType = InitSdkData.PayType.OP_DCB;
                 }
-                else if(paymentKeyList.getString(0).indexOf("OP_SMS") != -1)
+                else if(list.indexOf("OP_SMS") != -1)
                 {
                     initSdkData.payType = InitSdkData.PayType.OP_SMS;
                 }
+                else
+                {
+                    initSdkData.payType = InitSdkData.PayType.UNAVAILABLE;
+                }
+                String stt = "；userCode:"+userCode;
+                stt += "；productName:"+productName;
+                stt += "；companyName:"+companyName;
+                stt += "；currencySymbol:"+currencySymbol;
+                stt += "；adsOpen:"+adsOpen;
+                stt += "；paymentKeyList:"+paymentKeyList;
+                stt += "；payType:"+initSdkData.payType;
+                Log.e(TAG, "decodeInitAppBySdk stt:"+stt);
                 YoleSdkMgr.getsInstance().initBasicSdkResult(true,"errorCode:"+errorCode+";message="+message);
 
             }
