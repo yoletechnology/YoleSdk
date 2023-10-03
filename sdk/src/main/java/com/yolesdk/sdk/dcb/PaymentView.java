@@ -51,12 +51,14 @@ public class PaymentView extends Activity {
         String amount = YoleSdkMgr.getsInstance().user.getAmount();
         String currencySymbol = YoleSdkMgr.getsInstance().user.initSdkData.currencySymbol;
         String orderNumber =  YoleSdkMgr.getsInstance().user.getPayOrderNum();
+        String areaCode =  YoleSdkMgr.getsInstance().user.initSdkData.areaCode;
 
         ((TextView) findViewById(R.id.name)).setText(appName);
         ((TextView) findViewById(R.id.pric)).setText(currencySymbol+" "+amount);
         ((TextView) findViewById(R.id.der)).setText(m_activity.getString(R.string.order)+"："+orderNumber);
         ((TextView) findViewById(R.id.phonetable)).setText(m_activity.getString(R.string.valid_phone_number)+"");
         ((TextView) findViewById(R.id.buy)).setText(m_activity.getString(R.string.payment)+"");
+        ((TextView) findViewById(R.id.phonetable1)).setText(""+areaCode);
 
 
         //获取网络图片的URL

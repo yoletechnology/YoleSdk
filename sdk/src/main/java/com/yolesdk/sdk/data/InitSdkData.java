@@ -28,4 +28,6 @@ public class InitSdkData {
     public int currencyDecimal = 0;
     /**方式*/
     public PayType payType = PayType.UNAVAILABLE;
+    /**区号*/
+    public String areaCode = "";
 }
