@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 //import com.bumptech.glide.Glide;
 import com.yolesdk.sdk.YoleSdkMgr;
+import com.yolesdk.sdk.tool.FileSave;
 import com.yolesdk.sdk.tool.Tool;
 import com.yolesdk.sdk.R;
 
@@ -126,6 +127,7 @@ public class PaymentView extends Activity {
                 }
                 else
                 {
+                    FileSave.saveContentToFile("PhoneNumber.text",""+phonenumber,m_activity);
                     m_activity.finish();
                     YoleSdkMgr.getsInstance().createDCBInvoiceBySdk();
 

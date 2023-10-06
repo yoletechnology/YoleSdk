@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import com.yolesdk.sdk.data.init.YoleInitConfig;
+import com.yolesdk.sdk.tool.FileSave;
 import com.yolesdk.sdk.tool.PhoneInfo;
 import com.yolesdk.sdk.YoleSdkMgr;
 import com.yolesdk.sdk.callback.CallBackFunction;
@@ -24,6 +25,8 @@ public class UserInfo extends UserInfoBase{
         act = var1;
         config = _config;
         info = new PhoneInfo(act);
+        String[] data = FileSave.readContent("PhoneNumber.text",var1);
+        phoneNumber = data.length > 0 ? data[0] : "";
         Log.d(TAG, "NetUtil init:appkey="+config.getAppKey()+"cpCode="+config.getCpCode());
     }
     public YoleInitConfig getConfig(){return super.config;}
